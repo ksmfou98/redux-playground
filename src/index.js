@@ -1,28 +1,52 @@
+// redux 에서 명심할 것!
+// reducer에서 state를 변경하는 것이 아니고 새로운 state를 반환하는 거임
+
 import { createStore } from "redux";
 
-const add = document.getElementById("add");
-const minus = document.getElementById("minus");
-const number = document.querySelector("span");
+const form = document.querySelector("form");
+const input = document.querySelector("input");
+const ul = document.querySelector("ul");
 
-const countModifier = (count = 0, action) => {
-  console.log(count, action);
-  if (action.type === "ADD") {
-    return count + 1;
-  } else if (action.type === "MINUS") {
-    return count - 1;
-  } else {
-    return count;
+const ADD_TODO = "ADD_TODO";
+const DELETE_TODO = "DELETE_TODO";
+
+const reducer = (state = [], action) => {
+  switch (action.type) {
+    case ADD_TODO:
+      return [...state, { text: action.text, id: Date.now() }];
+    case DELETE_TODO:
+      return 1;
+
+    default:
+      break;
   }
 };
 
-const countStore = createStore(countModifier);
+const store = createStore(reducer);
+store.subscribe(() => console.log(store.getState()));
 
-add.addEventListener("click", () => countStore.dispatch({ type: "ADD" }));
-minus.addEventListener("click", () => countStore.dispatch({ type: "MINUS" }));
-number.innerText = countStore.getState();
-
-const onChange = () => {
-  number.innerText = countStore.getState();
+const paintToDos = () => {
+  ul.innerHTML = "";
+  const toDos = store.getState();
+  toDos.forEach((toDo) => {
+    const li = document.createElement("li");
+    li.id = toDo.id;
+    li.innerText = toDo.text;
+    ul.appendChild(li);
+  });
 };
 
-countStore.subscribe(onChange); // subscribe 는 store의 값이 바뀔때마다 괄호안의 함수가 실행됨!
+store.subscribe(paintToDos);
+
+const addToDo = (text) => {
+  store.dispatch({ type: ADD_TODO, text });
+};
+
+const onSubmit = (e) => {
+  e.preventDefault();
+  const toDo = input.value;
+  input.value = "";
+  addToDo(toDo);
+};
+
+form.addEventListener("submit", onSubmit);
