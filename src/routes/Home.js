@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { addTodo, deleteToDo } from "../store";
 
 const Home = ({ toDos, dispatchAddToDo, dispatchDeleteToDo }) => {
@@ -24,7 +25,7 @@ const Home = ({ toDos, dispatchAddToDo, dispatchDeleteToDo }) => {
       <ul>
         {toDos.map((todo, index) => (
           <li key={index}>
-            {todo.text}
+            <Link to={`/${todo.id}`}>{todo.text}</Link>
             <button onClick={() => dispatchDeleteToDo(todo.id)}>DEL</button>
           </li>
         ))}
